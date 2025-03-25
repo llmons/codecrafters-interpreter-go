@@ -38,15 +38,22 @@ func main() {
 		'*': "STAR",
 		'/': "SLASH",
 	}
-	if len(fileContents) > 0 {
-		for _, token := range fileContents {
-			if val, ok := mp[token]; ok {
-				fmt.Printf("%s %c null\n", val, token)
-			} else {
-				fmt.Printf("EOF  null\n")
-				break
-			}
+	line, unkownChar := 1, false
+	for _, token := range fileContents {
+		if token == '\n' {
+			line++
+			continue
+		}
+		if val, ok := mp[token]; ok {
+			fmt.Printf("%s %c null\n", val, token)
+		} else {
+			fmt.Fprintf(os.Stderr, "[line %d] Error: Unexpected character: %c\n", line, token)
+			unkownChar = true
 		}
 	}
 	fmt.Println("EOF  null")
+	if unkownChar {
+		os.Exit(65)
+	}
+
 }
