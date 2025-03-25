@@ -77,7 +77,7 @@ outer:
 			if math.Floor(val) == val {
 				fmt.Printf("NUMBER %s %.1f\n", string(fileContents[i:j]), val)
 			} else {
-				fmt.Printf("NUMBER %s %g\n", string(fileContents[i:j]), val)
+				fmt.Printf("NUMBER %s %.4f\n", string(fileContents[i:j]), val)
 			}
 			// now j points to the character after the number
 			i = j - 1
