@@ -38,16 +38,18 @@ func main() {
 		'*': "STAR",
 		'/': "SLASH",
 	}
-	line, unkownChar := 1, false
+	line, hasErr := 1, false
 	for i := 0; i < len(fileContents); i++ {
 		token := fileContents[i]
 		if token == '\n' {
 			line++
 			continue
 		}
+
 		if token == ' ' || token == '\t' || token == '\r' {
 			continue
 		}
+
 		if i < len(fileContents)-1 && token == '/' && fileContents[i+1] == '/' {
 			for i < len(fileContents) && fileContents[i] != '\n' {
 				i++
@@ -55,6 +57,24 @@ func main() {
 			line++
 			continue
 		}
+
+		if token == '"' {
+			j := i + 1
+			for ; j < len(fileContents) && fileContents[j] != '"'; j++ {
+				if fileContents[j] == '\n' {
+					line++
+				}
+			}
+			if j == len(fileContents) {
+				fmt.Fprintf(os.Stderr, "[line %d] Error: Unterminated string.\n", line)
+				hasErr = true
+				break
+			}
+			fmt.Printf("STRING %s %s\n", string(fileContents[i:j+1]), string(fileContents[i+1:j]))
+			i = j
+			continue
+		}
+
 		if token == '=' {
 			if i < len(fileContents)-1 && fileContents[i+1] == '=' {
 				fmt.Printf("EQUAL_EQUAL == null\n")
@@ -64,6 +84,7 @@ func main() {
 			}
 			continue
 		}
+
 		if token == '!' {
 			if i < len(fileContents)-1 && fileContents[i+1] == '=' {
 				fmt.Printf("BANG_EQUAL != null\n")
@@ -73,6 +94,7 @@ func main() {
 			}
 			continue
 		}
+
 		if token == '<' {
 			if i < len(fileContents)-1 && fileContents[i+1] == '=' {
 				fmt.Printf("LESS_EQUAL <= null\n")
@@ -82,6 +104,7 @@ func main() {
 			}
 			continue
 		}
+
 		if token == '>' {
 			if i < len(fileContents)-1 && fileContents[i+1] == '=' {
 				fmt.Printf("GREATER_EQUAL >= null\n")
@@ -91,16 +114,17 @@ func main() {
 			}
 			continue
 		}
+
 		if val, ok := mp[token]; ok {
 			fmt.Printf("%s %c null\n", val, token)
 		} else {
 			fmt.Fprintf(os.Stderr, "[line %d] Error: Unexpected character: %c\n", line, token)
-			unkownChar = true
+			hasErr = true
 		}
 	}
+
 	fmt.Println("EOF  null")
-	if unkownChar {
+	if hasErr {
 		os.Exit(65)
 	}
-
 }
