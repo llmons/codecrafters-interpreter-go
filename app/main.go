@@ -45,6 +45,9 @@ func main() {
 			line++
 			continue
 		}
+		if token == ' ' || token == '\t' || token == '\r' {
+			continue
+		}
 		if i < len(fileContents)-1 && token == '/' && fileContents[i+1] == '/' {
 			for i < len(fileContents) && fileContents[i] != '\n' {
 				i++
