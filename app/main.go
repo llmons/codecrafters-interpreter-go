@@ -25,15 +25,19 @@ func main() {
 		os.Exit(1)
 	}
 
+	mp := map[byte]string{
+		'(': "LEFT_PAREN",
+		')': "RIGHT_PAREN",
+		'{': "LEFT_BRACE",
+		'}': "RIGHT_BRACE",
+	}
 	if len(fileContents) > 0 {
 		for _, token := range fileContents {
-			switch token {
-			case '(':
-				fmt.Println("LEFT_PAREN ( null")
-			case ')':
-				fmt.Println("RIGHT_PAREN ) null")
-			default:
-				fmt.Println("UNKNOWN null")
+			if val, ok := mp[token]; ok {
+				fmt.Printf("%s %c null\n", val, token)
+			} else {
+				fmt.Printf("EOF  null\n")
+				break
 			}
 		}
 	}
