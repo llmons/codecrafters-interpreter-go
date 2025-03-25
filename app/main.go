@@ -45,6 +45,12 @@ func main() {
 			line++
 			continue
 		}
+		if i < len(fileContents)-1 && token == '/' && fileContents[i+1] == '/' {
+			for i < len(fileContents) && fileContents[i] != '\n' {
+				i++
+			}
+			continue
+		}
 		if token == '=' {
 			if i < len(fileContents)-1 && fileContents[i+1] == '=' {
 				fmt.Printf("EQUAL_EQUAL == null\n")
