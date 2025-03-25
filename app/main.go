@@ -39,9 +39,19 @@ func main() {
 		'/': "SLASH",
 	}
 	line, unkownChar := 1, false
-	for _, token := range fileContents {
+	for i := 0; i < len(fileContents); i++ {
+		token := fileContents[i]
 		if token == '\n' {
 			line++
+			continue
+		}
+		if token == '=' {
+			if i < len(fileContents)-1 && fileContents[i+1] == '=' {
+				fmt.Printf("EQUAL_EQUAL == null\n")
+				i++
+			} else {
+				fmt.Printf("EQUAL = null\n")
+			}
 			continue
 		}
 		if val, ok := mp[token]; ok {
