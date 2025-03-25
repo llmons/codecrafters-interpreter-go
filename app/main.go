@@ -52,6 +52,7 @@ func main() {
 			for i < len(fileContents) && fileContents[i] != '\n' {
 				i++
 			}
+			line++
 			continue
 		}
 		if token == '=' {
