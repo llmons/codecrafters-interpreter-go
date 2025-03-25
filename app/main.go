@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"math"
 	"os"
 )
 
@@ -59,6 +60,27 @@ outer:
 			} else {
 				fmt.Printf("SLASH / null\n")
 			}
+		case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
+			j := i + 1
+			var val float64
+			val = float64(token - '0')
+			for ; j < len(fileContents) && (fileContents[j] >= '0' && fileContents[j] <= '9'); j++ {
+				val = val*10 + float64(fileContents[j]-'0')
+			}
+			if j < len(fileContents) && fileContents[j] == '.' {
+				j++
+				for k := 10; j < len(fileContents) && (fileContents[j] >= '0' && fileContents[j] <= '9'); j++ {
+					val += float64(fileContents[j]-'0') * 1.0 / float64(k)
+					k *= 10
+				}
+			}
+			if math.Floor(val) == val {
+				fmt.Printf("NUMBER %s %.1f\n", string(fileContents[i:j]), val)
+			} else {
+				fmt.Printf("NUMBER %s %g\n", string(fileContents[i:j]), val)
+			}
+			// now j points to the character after the number
+			i = j - 1
 		case '"':
 			j := i + 1
 			for ; j < len(fileContents) && fileContents[j] != '"'; j++ {
@@ -72,6 +94,7 @@ outer:
 				break outer
 			}
 			fmt.Printf("STRING %s %s\n", string(fileContents[i:j+1]), string(fileContents[i+1:j]))
+			// now j points to the closing "
 			i = j
 		case '=':
 			if i < len(fileContents)-1 && fileContents[i+1] == '=' {
