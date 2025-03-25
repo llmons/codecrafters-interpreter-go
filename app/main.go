@@ -45,6 +45,15 @@ func main() {
 			line++
 			continue
 		}
+		if token == '=' {
+			if i < len(fileContents)-1 && fileContents[i+1] == '=' {
+				fmt.Printf("EQUAL_EQUAL == null\n")
+				i++
+			} else {
+				fmt.Printf("EQUAL = null\n")
+			}
+			continue
+		}
 		if token == '!' {
 			if i < len(fileContents)-1 && fileContents[i+1] == '=' {
 				fmt.Printf("BANG_EQUAL != null\n")
@@ -54,12 +63,21 @@ func main() {
 			}
 			continue
 		}
-		if token == '=' {
+		if token == '<' {
 			if i < len(fileContents)-1 && fileContents[i+1] == '=' {
-				fmt.Printf("EQUAL_EQUAL == null\n")
+				fmt.Printf("LESS_EQUAL <= null\n")
 				i++
 			} else {
-				fmt.Printf("EQUAL = null\n")
+				fmt.Printf("LESS < null\n")
+			}
+			continue
+		}
+		if token == '>' {
+			if i < len(fileContents)-1 && fileContents[i+1] == '=' {
+				fmt.Printf("GREATER_EQUAL >= null\n")
+				i++
+			} else {
+				fmt.Printf("GREATER > null\n")
 			}
 			continue
 		}
