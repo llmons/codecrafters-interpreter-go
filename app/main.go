@@ -24,10 +24,18 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Error reading file: %v\n", err)
 		os.Exit(1)
 	}
-	
+
 	if len(fileContents) > 0 {
-		panic("Scanner not implemented")
-	} else {
-		fmt.Println("EOF  null") // Placeholder, remove this line when implementing the scanner
+		for _, token := range fileContents {
+			switch token {
+			case '(':
+				fmt.Println("LEFT_PAREN ( null")
+			case ')':
+				fmt.Println("RIGHT_PAREN ) null")
+			default:
+				fmt.Println("UNKNOWN null")
+			}
+		}
 	}
+	fmt.Println("EOF  null")
 }
