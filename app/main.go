@@ -5,7 +5,7 @@ import (
 	"os"
 )
 
-func main() {
+func getFileContents() []byte {
 	if len(os.Args) < 3 {
 		fmt.Fprintln(os.Stderr, "Usage: ./your_program.sh tokenize <filename>")
 		os.Exit(1)
@@ -24,6 +24,11 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Error reading file: %v\n", err)
 		os.Exit(1)
 	}
+	return fileContents
+}
+
+func main() {
+	fileContents := getFileContents()
 
 	mp := map[byte]string{
 		'(': "LEFT_PAREN",
@@ -36,29 +41,25 @@ func main() {
 		'+': "PLUS",
 		';': "SEMICOLON",
 		'*': "STAR",
-		'/': "SLASH",
 	}
 	line, hasErr := 1, false
+outer:
 	for i := 0; i < len(fileContents); i++ {
 		token := fileContents[i]
-		if token == '\n' {
+		switch token {
+		case '\n':
 			line++
-			continue
-		}
-
-		if token == ' ' || token == '\t' || token == '\r' {
-			continue
-		}
-
-		if i < len(fileContents)-1 && token == '/' && fileContents[i+1] == '/' {
-			for i < len(fileContents) && fileContents[i] != '\n' {
-				i++
+		case ' ', '\t', '\r':
+		case '/':
+			if i < len(fileContents)-1 && fileContents[i+1] == '/' {
+				for i < len(fileContents) && fileContents[i] != '\n' {
+					i++
+				}
+				line++
+			} else {
+				fmt.Printf("SLASH / null\n")
 			}
-			line++
-			continue
-		}
-
-		if token == '"' {
+		case '"':
 			j := i + 1
 			for ; j < len(fileContents) && fileContents[j] != '"'; j++ {
 				if fileContents[j] == '\n' {
@@ -68,58 +69,45 @@ func main() {
 			if j == len(fileContents) {
 				fmt.Fprintf(os.Stderr, "[line %d] Error: Unterminated string.\n", line)
 				hasErr = true
-				break
+				break outer
 			}
 			fmt.Printf("STRING %s %s\n", string(fileContents[i:j+1]), string(fileContents[i+1:j]))
 			i = j
-			continue
-		}
-
-		if token == '=' {
+		case '=':
 			if i < len(fileContents)-1 && fileContents[i+1] == '=' {
 				fmt.Printf("EQUAL_EQUAL == null\n")
 				i++
 			} else {
 				fmt.Printf("EQUAL = null\n")
 			}
-			continue
-		}
-
-		if token == '!' {
+		case '!':
 			if i < len(fileContents)-1 && fileContents[i+1] == '=' {
 				fmt.Printf("BANG_EQUAL != null\n")
 				i++
 			} else {
 				fmt.Printf("BANG ! null\n")
 			}
-			continue
-		}
-
-		if token == '<' {
+		case '<':
 			if i < len(fileContents)-1 && fileContents[i+1] == '=' {
 				fmt.Printf("LESS_EQUAL <= null\n")
 				i++
 			} else {
 				fmt.Printf("LESS < null\n")
 			}
-			continue
-		}
-
-		if token == '>' {
+		case '>':
 			if i < len(fileContents)-1 && fileContents[i+1] == '=' {
 				fmt.Printf("GREATER_EQUAL >= null\n")
 				i++
 			} else {
 				fmt.Printf("GREATER > null\n")
 			}
-			continue
-		}
-
-		if val, ok := mp[token]; ok {
-			fmt.Printf("%s %c null\n", val, token)
-		} else {
-			fmt.Fprintf(os.Stderr, "[line %d] Error: Unexpected character: %c\n", line, token)
-			hasErr = true
+		default:
+			if val, ok := mp[token]; ok {
+				fmt.Printf("%s %c null\n", val, token)
+			} else {
+				fmt.Fprintf(os.Stderr, "[line %d] Error: Unexpected character: %c\n", line, token)
+				hasErr = true
+			}
 		}
 	}
 
